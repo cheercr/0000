@@ -375,7 +375,7 @@ async function boot(){
         }, err => { console.error(err); dot.classList.add("off"); liveTxt.textContent = "เชื่อมต่อไม่สำเร็จ"; }); },
         add(r){ push(node, r); }
       };
-      liveTxt.textContent = "เรียลไทม์ · ทุกเครื่องเห็นพร้อมกัน";
+      liveTxt.textContent = "เปิดรับตลอด · เช็ครีวิวได้เลย";
       note.hidden = true;
     }catch(e){
       console.warn("ต่อ Firebase ไม่สำเร็จ ใช้โหมดในเครื่องแทน", e);
