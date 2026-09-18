@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>kaizen shop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:#080a1c;
+    --navy:#0e1230;
+    --plum:#1c0f3a;
+    --purple:#7c3aed;
+    --purple-bright:#a855f7;
+    --gold:#d4af37;
+    --gold-bright:#f4d477;
+    --blue:#2563eb;
+    --blue-bright:#5b8cff;
+    --ink:#f3eefc;
+    --ink-dim:#b3aed0;
+    --line: rgba(212,175,55,0.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse 900px 600px at 15% -10%, rgba(124,58,237,0.35), transparent 60%),
+      radial-gradient(ellipse 900px 700px at 100% 10%, rgba(37,99,235,0.30), transparent 55%),
+      radial-gradient(ellipse 700px 500px at 50% 110%, rgba(212,175,55,0.14), transparent 60%),
+      linear-gradient(180deg, var(--navy-deep), var(--navy) 40%, var(--plum) 100%);
+    color:var(--ink);
+    font-family:'Manrope', sans-serif;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* ---- ambient blinking lights ---- */
+  .lights{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+  .lights span{
+    position:absolute;
+    width:5px;height:5px;border-radius:50%;
+    background:var(--gold-bright);
+    box-shadow:0 0 8px 2px var(--gold-bright);
+    animation:blink 3.2s ease-in-out infinite;
+    opacity:.15;
+  }
+  @keyframes blink{
+    0%,100%{opacity:.08; transform:scale(.8);}
+    50%{opacity:.9; transform:scale(1.25);}
+  }
+
+  .wrap{
+    position:relative;z-index:1;
+    max-width:920px;margin:0 auto;
+    padding:56px 24px 90px;
+  }
+
+  /* ---- header / logo ---- */
+  header{
+    display:flex;flex-direction:column;align-items:center;
+    text-align:center;margin-bottom:52px;
+  }
+  .logo-row{
+    display:flex;align-items:center;gap:14px;margin-bottom:22px;
+    cursor:pointer;
+  }
+  .logo-mark{
+    width:54px;height:54px;border-radius:50%;
+    background:conic-gradient(from 180deg, var(--purple), var(--blue), var(--gold), var(--purple));
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Cormorant Garamond',serif;font-weight:700;font-size:22px;color:var(--navy-deep);
+    box-shadow:0 0 0 1px var(--line), 0 0 24px rgba(124,58,237,.55), 0 0 30px rgba(212,175,55,.25);
+    overflow:hidden;
+    flex-shrink:0;
+  }
+  .logo-mark img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+  #logoInput{display:none;}
+  .brand-name{
+    font-family:'Cormorant Garamond',serif;
+    font-size:15px;letter-spacing:.4px;
+    color:var(--ink-dim);
+    border:none;background:transparent;text-align:left;
+    outline:none;border-bottom:1px dashed transparent;
+  }
+  .brand-name:focus{border-bottom:1px dashed var(--gold);}
+  h1{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:700;font-style:italic;
+    font-size:clamp(34px,5vw,52px);
+    margin:0 0 12px;
+    background:linear-gradient(100deg, var(--gold-bright) 0%, var(--purple-bright) 45%, var(--blue-bright) 75%, var(--gold-bright) 100%);
+    background-size:220% auto;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:sheen 7s linear infinite;
+  }
+  @keyframes sheen{
+    0%{background-position:0% 50%;}
+    100%{background-position:220% 50%;}
+  }
+  header p{color:var(--ink-dim);font-size:15px;max-width:480px;line-height:1.7;margin:0;}
+
+  /* ---- card shell ---- */
+  .card{
+    position:relative;
+    border-radius:22px;
+    padding:38px clamp(20px,4vw,46px);
+    background:linear-gradient(160deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015));
+    border:1px solid var(--line);
+    box-shadow:0 30px 70px -20px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.05);
+    backdrop-filter:blur(6px);
+    margin-bottom:34px;
+  }
+  .card::before{
+    content:'';position:absolute;inset:-1px;border-radius:22px;padding:1px;
+    background:linear-gradient(120deg, rgba(212,175,55,.55), rgba(124,58,237,.4), rgba(37,99,235,.45), rgba(212,175,55,.55));
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+    pointer-events:none;
+    opacity:.55;
+  }
+  .corner-light{
+    position:absolute;width:7px;height:7px;border-radius:50%;
+    background:var(--gold-bright);box-shadow:0 0 10px 3px var(--gold-bright);
+    animation:blink 2.6s ease-in-out infinite;
+  }
+  .corner-light.tl{top:-3.5px;left:22px;}
+  .corner-light.tr{top:-3.5px;right:22px;animation-delay:.6s;}
+  .corner-light.bl{bottom:-3.5px;left:22px;animation-delay:1.2s;}
+  .corner-light.br{bottom:-3.5px;right:22px;animation-delay:1.8s;}
+
+  .card h2{
+    font-family:'Cormorant Garamond',serif;font-weight:600;font-size:24px;
+    margin:0 0 6px;color:var(--ink);
+  }
+  .card .sub{color:var(--ink-dim);font-size:13.5px;margin:0 0 26px;}
+
+  /* ---- star input ---- */
+  .stars-input{
+    display:flex;justify-content:center;gap:10px;margin-bottom:8px;
+  }
+  .stars-input button{
+    background:none;border:none;cursor:pointer;padding:4px;
+    font-size:40px;line-height:1;
+    color:rgba(255,255,255,.14);
+    transition:transform .15s ease, color .2s ease, text-shadow .2s ease;
+    -webkit-text-stroke:1px rgba(212,175,55,.35);
+  }
+  .stars-input button.filled{
+    color:var(--gold-bright);
+    -webkit-text-stroke:0;
+    text-shadow:0 0 16px rgba(212,175,55,.75), 0 0 30px rgba(124,58,237,.35);
+    transform:scale(1.08);
+  }
+  .stars-input button:hover{transform:scale(1.18);}
+  .rating-label{
+    text-align:center;font-size:13px;color:var(--ink-dim);min-height:18px;margin-bottom:24px;
+    letter-spacing:.3px;
+  }
+
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:12.5px;color:var(--ink-dim);margin-bottom:7px;letter-spacing:.2px;}
+  .field input, .field textarea{
+    width:100%;padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.09);
+    color:var(--ink);font-family:'Manrope',sans-serif;font-size:14.5px;
+    outline:none;resize:vertical;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  .field textarea{min-height:88px;}
+  .field input:focus, .field textarea:focus{
+    border-color:var(--gold);
+    box-shadow:0 0 0 3px rgba(212,175,55,.12);
+  }
+  .field input::placeholder, .field textarea::placeholder{color:rgba(179,174,208,.45);}
+
+  .submit-btn{
+    width:100%;margin-top:8px;padding:14px 0;border:none;border-radius:14px;
+    cursor:pointer;font-family:'Manrope',sans-serif;font-weight:700;font-size:14.5px;
+    letter-spacing:.3px;color:#0c0a1a;
+    background:linear-gradient(100deg, var(--gold-bright), var(--purple-bright) 55%, var(--blue-bright));
+    background-size:200% auto;
+    box-shadow:0 12px 26px -8px rgba(124,58,237,.55);
+    transition:background-position .5s ease, transform .15s ease;
+  }
+  .submit-btn:hover{background-position:100% 0; transform:translateY(-1px);}
+  .submit-btn:active{transform:translateY(0);}
+  .submit-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  .toast{
+    position:fixed;top:22px;left:50%;transform:translateX(-50%) translateY(-14px);
+    background:linear-gradient(100deg, rgba(212,175,55,.95), rgba(124,58,237,.95));
+    color:#0c0a1a;font-weight:700;font-size:13.5px;
+    padding:11px 22px;border-radius:30px;
+    box-shadow:0 14px 30px -8px rgba(0,0,0,.5);
+    opacity:0;pointer-events:none;transition:opacity .35s, transform .35s;
+    z-index:50;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* ---- stats dashboard ---- */
+  .stats-grid{display:flex;gap:30px;align-items:center;flex-wrap:wrap;margin-bottom:30px;}
+  .avg-block{
+    flex:0 0 auto;text-align:center;min-width:150px;
+    padding:18px 26px;border-radius:16px;
+    background:radial-gradient(circle at 50% 20%, rgba(212,175,55,.12), transparent 70%);
+  }
+  .avg-num{
+    font-family:'Cormorant Garamond',serif;font-weight:700;font-size:64px;line-height:1;
+    background:linear-gradient(100deg, var(--gold-bright), var(--purple-bright), var(--blue-bright));
+    background-size:220% auto;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:sheen 6s linear infinite;
+  }
+  .avg-stars{margin:8px 0 4px;font-size:19px;color:var(--gold-bright);letter-spacing:2px;text-shadow:0 0 12px rgba(212,175,55,.5);}
+  .avg-count{font-size:12.5px;color:var(--ink-dim);}
+
+  .bars{flex:1 1 260px;display:flex;flex-direction:column;gap:9px;min-width:220px;}
+  .bar-row{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink-dim);}
+  .bar-row .bl{width:38px;flex-shrink:0;text-align:right;}
+  .bar-track{
+    flex:1;height:9px;border-radius:6px;background:rgba(255,255,255,.06);overflow:hidden;
+    position:relative;
+  }
+  .bar-fill{
+    height:100%;border-radius:6px;width:0%;
+    background:linear-gradient(90deg, var(--purple), var(--gold), var(--blue));
+    box-shadow:0 0 10px rgba(212,175,55,.45);
+    transition:width 1s cubic-bezier(.16,1,.3,1);
+  }
+  .bar-row .bc{width:28px;flex-shrink:0;color:var(--ink-dim);}
+
+  /* ---- reviews list ---- */
+  .review-item{
+    padding:16px 0;border-top:1px solid var(--line);
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .review-item:first-child{border-top:none;}
+  .review-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+  .review-name{font-weight:700;font-size:14px;color:var(--ink);}
+  .review-stars{color:var(--gold-bright);font-size:14px;letter-spacing:1px;text-shadow:0 0 8px rgba(212,175,55,.4);}
+  .review-time{font-size:11.5px;color:var(--ink-dim);white-space:nowrap;}
+  .review-comment{font-size:13.5px;color:var(--ink-dim);line-height:1.65;}
+  .empty-state{text-align:center;color:var(--ink-dim);font-size:13.5px;padding:30px 0;}
+
+  footer{text-align:center;font-size:11.5px;color:rgba(179,174,208,.4);margin-top:10px;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important;}
+  }
+  @media (max-width:520px){
+    .stars-input button{font-size:32px;}
+    .avg-num{font-size:50px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="lights" id="lights"></div>
+
+<div class="wrap">
+
+  <header>
+    <div class="logo-row" id="logoRow" title="คลิกเพื่ออัปโหลดโลโก้">
+      <div class="logo-mark" id="logoMark">R</div>
+      <input type="file" id="logoInput" accept="image/*">
+      <input class="brand-name" id="brandName" value="RÉGENCE" maxlength="24">
+    </div>
+    <h1>ให้คะแนนการให้บริการของเรา</h1>
+    <p>ความเห็นของคุณคือสิ่งที่ทำให้เราพัฒนาต่อไปได้ — กดดาวและบอกเราหน่อยว่าคุณรู้สึกอย่างไร</p>
+  </header>
+
+  <div class="card">
+    <span class="corner-light tl"></span><span class="corner-light tr"></span>
+    <span class="corner-light bl"></span><span class="corner-light br"></span>
+
+    <h2>เขียนรีวิว</h2>
+    <p class="sub">เลือกดาว 1–5 แล้วรีวิวให้เราสั้นๆ</p>
+
+    <div class="stars-input" id="starsInput">
+      <button data-v="1">★</button>
+      <button data-v="2">★</button>
+      <button data-v="3">★</button>
+      <button data-v="4">★</button>
+      <button data-v="5">★</button>
+    </div>
+    <div class="rating-label" id="ratingLabel">แตะดาวเพื่อให้คะแนน</div>
+
+    <div class="field">
+      <label>ชื่อของคุณ</label>
+      <input id="nameInput" type="text" placeholder="เช่น ไคเซ็น">
+    </div>
+    <div class="field">
+      <label>ความคิดเห็น</label>
+      <textarea id="commentInput" placeholder="บอกเราหน่อยว่าเราบริการดี หรืออยากให้ปรับตรงไหน..."></textarea>
+    </div>
+    <button class="submit-btn" id="submitBtn">ส่งรีวิว</button>
+  </div>
+
+  <div class="card">
+    <span class="corner-light tl"></span><span class="corner-light tr"></span>
+    <span class="corner-light bl"></span><span class="corner-light br"></span>
+
+    <h2>คะแนนโดยรวม</h2>
+    <p class="sub">อัปเดตทันทีจากทุกรีวิวที่ส่งเข้ามา</p>
+
+    <div class="stats-grid">
+      <div class="avg-block">
+        <div class="avg-num" id="avgNum">0.0</div>
+        <div class="avg-stars" id="avgStars">☆☆☆☆☆</div>
+        <div class="avg-count" id="avgCount">ยังไม่มีรีวิว</div>
+      </div>
+      <div class="bars" id="bars"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="corner-light tl"></span><span class="corner-light tr"></span>
+    <span class="corner-light bl"></span><span class="corner-light br"></span>
+
+    <h2>รีวิวล่าสุด</h2>
+    <p class="sub">เสียงจากลูกค้าของเรา</p>
+    <div id="reviewList"></div>
+  </div>
+
+  <footer>ตัวอย่างนี้เก็บข้อมูลไว้ชั่วคราวในหน้านี้เท่านั้น — เชื่อมต่อฐานข้อมูลจริงเพื่อใช้งานถาวร</footer>
+</div>
+
+<div class="toast" id="toast">ขอบคุณสำหรับรีวิว ✦</div>
+
+<script>
+(function(){
+  // ambient background lights
+  const lights = document.getElementById('lights');
+  for(let i=0;i<26;i++){
+    const s = document.createElement('span');
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.animationDelay = (Math.random()*4)+'s';
+    s.style.animationDuration = (2.4+Math.random()*3)+'s';
+    lights.appendChild(s);
+  }
+
+  const starsInput = document.getElementById('starsInput');
+  const starBtns = [...starsInput.querySelectorAll('button')];
+  const ratingLabel = document.getElementById('ratingLabel');
+  const labels = {1:'แย่มาก',2:'พอใช้',3:'ปานกลาง',4:'ดี',5:'ยอดเยี่ยม'};
+  let selected = 0;
+
+  function paintStars(v){
+    starBtns.forEach(b=>{
+      b.classList.toggle('filled', +b.dataset.v <= v);
+    });
+  }
+  starBtns.forEach(b=>{
+    b.addEventListener('mouseenter', ()=> paintStars(+b.dataset.v));
+    b.addEventListener('mouseleave', ()=> paintStars(selected));
+    b.addEventListener('click', ()=>{
+      selected = +b.dataset.v;
+      paintStars(selected);
+      ratingLabel.textContent = selected + ' ดาว · ' + labels[selected];
+    });
+  });
+
+  // logo upload
+  const logoMark = document.getElementById('logoMark');
+  const logoInput = document.getElementById('logoInput');
+  document.getElementById('logoRow').addEventListener('click', (e)=>{
+    if(e.target.id === 'brandName') return;
+    logoInput.click();
+  });
+  logoInput.addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      logoMark.innerHTML = '<img src="'+reader.result+'" alt="logo">';
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('brandName').addEventListener('input', (e)=>{
+    if(!logoMark.querySelector('img')){
+      const val = e.target.value.trim();
+      logoMark.textContent = val ? val[0].toUpperCase() : 'R';
+    }
+  });
+
+  function toast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._h);
+    t._h = setTimeout(()=> t.classList.remove('show'), 2200);
+  }
+
+  function timeAgoNow(){ return 'เมื่อสักครู่'; }
+
+  function render(){
+    const total = reviews.length;
+    const avgNumEl = document.getElementById('avgNum');
+    const avgStarsEl = document.getElementById('avgStars');
+    const avgCountEl = document.getElementById('avgCount');
+    const barsEl = document.getElementById('bars');
+    const listEl = document.getElementById('reviewList');
+
+    if(total === 0){
+      avgNumEl.textContent = '0.0';
+      avgStarsEl.textContent = '☆☆☆☆☆';
+      avgCountEl.textContent = 'ยังไม่มีรีวิว';
+    } else {
+      const sum = reviews.reduce((a,r)=>a+r.stars,0);
+      const avg = sum/total;
+      avgNumEl.textContent = avg.toFixed(1);
+      const full = Math.round(avg);
+      avgStarsEl.textContent = '★'.repeat(full) + '☆'.repeat(5-full);
+      avgCountEl.textContent = 'จาก ' + total + ' รีวิว';
+    }
+
+    barsEl.innerHTML = '';
+    for(let s=5; s>=1; s--){
+      const count = reviews.filter(r=>r.stars===s).length;
+      const pct = total ? Math.round((count/total)*100) : 0;
+      const row = document.createElement('div');
+      row.className = 'bar-row';
+      row.innerHTML =
+        '<span class="bl">'+s+' ดาว</span>'+
+        '<span class="bar-track"><span class="bar-fill" style="width:0%" data-pct="'+pct+'"></span></span>'+
+        '<span class="bc">'+count+'</span>';
+      barsEl.appendChild(row);
+    }
+    requestAnimationFrame(()=>{
+      barsEl.querySelectorAll('.bar-fill').forEach(el=>{
+        el.style.width = el.dataset.pct + '%';
+      });
+    });
+
+    listEl.innerHTML = '';
+    if(reviews.length === 0){
+      listEl.innerHTML = '<div class="empty-state">ยังไม่มีรีวิว เป็นคนแรกที่แบ่งปันความคิดเห็นสิ!</div>';
+    } else {
+      reviews.slice().reverse().forEach(r=>{
+        const item = document.createElement('div');
+        item.className = 'review-item';
+        item.innerHTML =
+          '<div class="review-head">'+
+            '<span class="review-name">'+escapeHtml(r.name)+'</span>'+
+            '<span class="review-time">'+escapeHtml(r.time)+'</span>'+
+          '</div>'+
+          '<div class="review-stars">'+'★'.repeat(r.stars)+'☆'.repeat(5-r.stars)+'</div>'+
+          (r.comment ? '<div class="review-comment">'+escapeHtml(r.comment)+'</div>' : '');
+        listEl.appendChild(item);
+      });
+    }
+  }
+
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', ()=>{
+    if(selected === 0){
+      toast('กรุณาเลือกจำนวนดาวก่อนนะคะ/ครับ ✦');
+      return;
+    }
+    const nameInput = document.getElementById('nameInput');
+    const commentInput = document.getElementById('commentInput');
+    const name = nameInput.value.trim() || 'ผู้เยี่ยมชม';
+    const comment = commentInput.value.trim();
+
+    reviews.push({name, stars:selected, comment, time: timeAgoNow()});
+    render();
+
+    toast('ขอบคุณสำหรับรีวิว ✦');
+    nameInput.value = '';
+    commentInput.value = '';
+    selected = 0;
+    paintStars(0);
+    ratingLabel.textContent = 'แตะดาวเพื่อให้คะแนน';
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
