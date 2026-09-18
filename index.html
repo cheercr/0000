@@ -338,8 +338,10 @@ let reviews = [];
    เพื่อให้ทดสอบหน้าตาได้ทันทีโดยไม่ต้องตั้งค่าอะไรก่อน */
 const LocalStore = {
   ch: ("BroadcastChannel" in window) ? new BroadcastChannel("dizen-reviews") : null,
+  cb: null,
   read(){ try{ return JSON.parse(localStorage.getItem(KEY)) || [] }catch(e){ return [] } },
   start(cb){
+    this.cb = cb;
     cb(this.read());
     if(this.ch) this.ch.onmessage = () => cb(this.read());
     addEventListener("storage", e => { if(e.key === KEY) cb(this.read()); });
@@ -348,7 +350,7 @@ const LocalStore = {
     const all = this.read(); all.unshift(r);
     localStorage.setItem(KEY, JSON.stringify(all.slice(0,500)));
     if(this.ch) this.ch.postMessage(1);
-    this.start.cb && this.start.cb(this.read());
+    this.cb && this.cb(this.read());
   }
 };
 
@@ -385,6 +387,7 @@ async function boot(){
     showSetupNote();
   }
   store.start(render);
+}
 
 /* ============================================================
    2) ดาว
